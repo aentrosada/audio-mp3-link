@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Hospedador de Áudio</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    .player { margin-bottom: 15px; }
+  </style>
+</head>
+<body>
+  <h1>Meus Áudios</h1>
+  <div id="audio-container"></div>
+
+  <script>
+    async function carregarAudios() {
+      const response = await fetch('audios.json');
+      const audios = await response.json();
+      const container = document.getElementById('audio-container');
+
+      audios.forEach(src => {
+        const div = document.createElement('div');
+        div.className = 'player';
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+
+        const source = document.createElement('source');
+        source.src = src;
+        source.type = 'audio/mpeg';
+
+        audio.appendChild(source);
+        div.appendChild(audio);
+        container.appendChild(div);
+      });
+    }
+
+    carregarAudios();
+  </script>
+</body>
+</html>
