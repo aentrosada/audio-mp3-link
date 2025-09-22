@@ -4,9 +4,60 @@
   <meta charset="UTF-8">
   <title>Hospedador de Áudio</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    h1 { margin-bottom: 20px; }
-    .player { margin-bottom: 15px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    #audio-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .audio-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 15px;
+      width: 250px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .audio-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .audio-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #555;
+      word-wrap: break-word;
+    }
+
+    audio {
+      width: 100%;
+      outline: none;
+    }
+
+    @media (max-width: 600px) {
+      .audio-card {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -15,25 +66,36 @@
 
   <script>
     async function carregarAudios() {
-      const response = await fetch('audios.json');
-      const audios = await response.json();
-      const container = document.getElementById('audio-container');
+      try {
+        const response = await fetch('audios.json');
+        if (!response.ok) throw new Error('Não foi possível carregar o JSON.');
+        const audios = await response.json();
+        const container = document.getElementById('audio-container');
 
-      audios.forEach(src => {
-        const div = document.createElement('div');
-        div.className = 'player';
+        audios.forEach(src => {
+          const div = document.createElement('div');
+          div.className = 'audio-card';
 
-        const audio = document.createElement('audio');
-        audio.controls = true;
+          const title = document.createElement('div');
+          title.className = 'audio-title';
+          title.textContent = src.split('/').pop(); // nome do arquivo
 
-        const source = document.createElement('source');
-        source.src = src;
-        source.type = 'audio/mpeg';
+          const audio = document.createElement('audio');
+          audio.controls = true;
 
-        audio.appendChild(source);
-        div.appendChild(audio);
-        container.appendChild(div);
-      });
+          const source = document.createElement('source');
+          source.src = src;
+          source.type = 'audio/mpeg';
+
+          audio.appendChild(source);
+          div.appendChild(title);
+          div.appendChild(audio);
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('audio-container').textContent = 'Erro ao carregar áudios.';
+      }
     }
 
     carregarAudios();
